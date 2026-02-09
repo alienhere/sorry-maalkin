@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I Am Sorry Prisha</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            text-align: center;
+        }
+
+        h1 { margin-bottom: 40px; color: #555; }
+
+        .container {
+            width: 80%;
+            max-width: 500px;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .label {
+            display: flex; justify-content: space-between;
+            font-weight: 600; margin-bottom: 10px;
+        }
+
+        /* BAR STYLES */
+        .bar-container {
+            width: 100%; height: 25px;
+            background: #eee; border-radius: 50px;
+            overflow: hidden; margin-bottom: 30px;
+            position: relative;
+        }
+
+        .fill {
+            height: 100%; border-radius: 50px;
+            transition: width 2s ease-in-out;
+            display: flex; align-items: center; justify-content: flex-end;
+            padding-right: 10px; color: white; font-size: 12px; font-weight: bold;
+        }
+
+        /* SORRY BAR */
+        #sorryBar { width: 0%; background: #ff6b6b; }
+        
+        /* LOVE BAR */
+        #loveBar { 
+            width: 100%; 
+            background: linear-gradient(90deg, #ff9a9e, #ff4d6d, #ff9a9e);
+            background-size: 200% 100%;
+            animation: flow 2s infinite linear;
+        }
+
+        @keyframes flow { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+        .infinity { font-size: 20px; animation: spin 3s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* APOLOGY NOTE */
+        .note-btn {
+            background: #333; color: white; border: none;
+            padding: 12px 30px; border-radius: 50px;
+            font-size: 1rem; cursor: pointer; transition: 0.3s;
+        }
+        .note-btn:hover { transform: scale(1.05); background: #000; }
+
+        .modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center; justify-content: center;
+            padding: 20px; z-index: 100;
+        }
+
+        .modal-content {
+            background: white; padding: 30px; border-radius: 20px;
+            max-width: 500px; text-align: left;
+            transform: scale(0.7); opacity: 0; transition: all 0.3s;
+        }
+
+        .modal.active .modal-content { transform: scale(1); opacity: 1; }
+
+        .modal h2 { margin-top: 0; color: #ff4d6d; }
+        .modal p { color: #555; line-height: 1.6; font-size: 0.95rem; }
+        
+        .close-btn {
+            margin-top: 20px; background: #ff4d6d; color: white;
+            border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;
+            width: 100%;
+        }
+
+        .bears { width: 120px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <img src="https://media.tenor.com/KUp21w5t0BAAAAAi/sad-bear.gif" class="bears" id="bearImg">
+    <h1>I Messed Up...</h1>
+
+    <div class="container">
+        <div class="label">
+            <span>Guilt Level</span>
+            <span id="sorryText">0%</span>
+        </div>
+        <div class="bar-container">
+            <div class="fill" id="sorryBar"></div>
+        </div>
+
+        <div class="label">
+            <span>Love Level</span>
+            <span>FOREVER</span>
+        </div>
+        <div class="bar-container">
+            <div class="fill" id="loveBar">
+                <span class="infinity">∞</span> &nbsp; INFINITE
+            </div>
+        </div>
+
+        <button class="note-btn" onclick="openModal()">Read My Apology 💌</button>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2>Prisha, I'm Sorry.</h2>
+            <p>
+                I know I hurt you today. I shouldn't have said those things about June or your parents. I know how important your exams are, and I should have been supporting you instead of adding pressure.
+            </p>
+            <p>
+                My fear of missing you made me speak without thinking, but that's no excuse to make you feel bad about doing the right thing.
+            </p>
+            <p>
+                Study hard, ace your exams. I will wait for you. Whether it's June, July, or whenever. You are worth the wait.
+            </p>
+            <p style="font-weight: bold; text-align: center; color: #ff4d6d;">I love you, Maalkin. ❤️</p>
+            <button class="close-btn" onclick="forgiveMe()">I Forgive You (Click to Hug)</button>
+        </div>
+    </div>
+
+    <script>
+        // Animate Sorry Bar on Load
+        setTimeout(() => {
+            const bar = document.getElementById('sorryBar');
+            const text = document.getElementById('sorryText');
+            let width = 0;
+            
+            const interval = setInterval(() => {
+                width += 1;
+                bar.style.width = width > 100 ? '100%' : width + '%';
+                text.innerText = width + '%';
+                
+                if(width >= 1000) { // Goes to 1000%
+                    clearInterval(interval);
+                    text.innerText = "1000% (Breaking the scale)";
+                    bar.style.background = "#d00000";
+                }
+            }, 5);
+        }, 500);
+
+        function openModal() {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        function forgiveMe() {
+            document.getElementById('modal').classList.remove('active');
+            setTimeout(() => {
+                document.getElementById('modal').style.display = 'none';
+                
+                // Change bear to hugging
+                document.getElementById('bearImg').src = "https://media.tenor.com/5mY0_O7GIs4AAAAi/hug-love.gif";
+                document.querySelector('h1').innerText = "Thank You Maalkin ❤️";
+                
+                // Confetti
+                confetti({
+                    particleCount: 200,
+                    spread: 100,
+                    origin: { y: 0.6 },
+                    colors: ['#ff4d6d', '#ffffff']
+                });
+            }, 300);
+        }
+    </script>
+</body>
+</html>
